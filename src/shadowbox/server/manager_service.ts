@@ -62,6 +62,7 @@ interface RequestParams {
   //   port: number
   //   hours: number
   //   method: string
+  //   password: string
   [param: string]: unknown;
 }
 // Simplified request and response type interfaces containing only the
@@ -339,13 +340,22 @@ export class ShadowsocksManagerService {
       }
 
       const dataLimit = (req.params.limit as DataLimit) || undefined;
+      const password = req.params.password || '';
+      if (typeof password !== 'string') {
+        return next(
+          new restifyErrors.InvalidArgumentError(
+            {statusCode: 400},
+            `Expected a string password, instead got ${password} of type ${typeof password}`
+          )
+        );
+      }
 
       if (dataLimit) {
         validateDataLimit(dataLimit);
       }
 
       const accessKeyJson = accessKeyToApiJson(
-        await this.accessKeys.createNewAccessKey({encryptionMethod, name, dataLimit})
+        await this.accessKeys.createNewAccessKey({encryptionMethod, name, dataLimit, password})
       );
       res.send(201, accessKeyJson);
       logging.debug(`createNewAccessKey response ${JSON.stringify(accessKeyJson)}`);

@@ -55,6 +55,8 @@ export interface AccessKeyCreateParams {
   readonly name?: string;
   // The data transfer limit to apply to the access key.
   readonly dataLimit?: DataLimit;
+  // The password of access key.
+  readonly password?: string;
 }
 
 export interface AccessKeyRepository {
